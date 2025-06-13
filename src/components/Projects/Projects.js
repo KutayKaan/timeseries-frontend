@@ -1,10 +1,11 @@
 import React, {useState} from "react";
+import Particle from "../Particle";
 
 function Projects() {
     const [file, setFile] = useState(null);
     const [filename, setFilename] = useState('');
     const [columns, setColumns] = useState([]);
-    const [previewData, setPreviewData] = useState(null);
+    const [previewData, setPreviewData] = useState([]);
     const [targetColumn, setTargetColumn] = useState('');
     const [modelType, setModelType] = useState('cnn');
     const [isLoading, setIsLoading] = useState(false);
@@ -107,17 +108,20 @@ function Projects() {
             }
 
             const data = await response.json();
+
             setFilename(data.filename);
             setColumns(data.columns);
             setTargetColumn(data.columns[0]);
 
             // Get data preview
             const previewResponse = await fetch(`http://localhost:5000/api/preview/${data.filename}`);
+
             if (!previewResponse.ok) {
                 throw new Error('Failed to get data preview');
             }
             const previewData = await previewResponse.json();
-            setPreviewData(previewData);
+
+            setPreviewData(previewData.head);
 
         } catch (err) {
             setError(err.message);
@@ -311,7 +315,6 @@ function Projects() {
 
             {/* Show error */}
             {error && <div style={{color: 'red', marginBottom: '15px', fontWeight: 'bold'}}>Error: {error}</div>}
-
             {/* Show columns and preview if uploaded */}
             {columns.length > 0 && (
                 <div style={{
@@ -360,7 +363,8 @@ function Projects() {
                         </tr>
                         </thead>
                         <tbody>
-                        {previewData.map((row, idx) => (
+                        {
+                            previewData.map((row, idx) => (
                             <tr key={idx}>
                                 {columns.map((col) => (
                                     <td key={col} style={{padding: '8px', border: '1px solid #ccc'}}>{row[col]}</td>
@@ -1009,7 +1013,7 @@ function Projects() {
                     disabled={isLoading}
                     style={{
                         padding: '12px 20px',
-                        backgroundColor: isLoading ? '#ccc' : '#007bff',
+                        backgroundColor: isLoading ? '#ccc' : '#7510a8',
                         color: 'white',
                         border: 'none',
                         borderRadius: '5px',
@@ -1127,6 +1131,7 @@ function Projects() {
                     {/* <pre>{JSON.stringify(results, null, 2)}</pre> */}
                 </div>
             )}
+            <Particle/>
         </div>
     );
 }
